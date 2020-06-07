@@ -35,7 +35,7 @@ typedef t_s32int (*callback)(void *, t_s32int, char **, char **);
 
 #define Malloc(type, num) (type *)malloc(sizeof(type) * (num))
 
-
+int max = 20;         //最大socket数
 struct comm
 {
     t_s32int socket;
@@ -45,7 +45,7 @@ comm comm_data[500];    //套接字信息结构体
 order_info order;       //待发送订单结构体
 int order_type_flag;    //订单类型 商家 0还是客户1
 char name_to_send[20];  //待发订单的人名字
-int max = 10;         //最大socket数
+
 pthread_t conn_ph;      //监听线程id
 char comm_message[100]; //发送的信息
 struct fun_arg          //线程函数
@@ -575,7 +575,7 @@ void *thread_fun_listen(void *arg)
         signal(SIGALRM, signal_handle);
         pause();
 
-        printf("=========================\n");
+        printf("=============thread_fun_listen===========\n");
         printf(" thread%lld start send message \n", (long long)conn_ph);
         printf("=========================\n");
     }
