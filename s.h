@@ -494,18 +494,25 @@ t_s32int if_listen_socket(void *arg, t_s32int *i)
     comm_data[arg_in_fun.conn_fd].socket = arg_in_fun.conn_fd;
     read(arg_in_fun.conn_fd, name, 20); //读取用户名字 且绑定
     strncpy(comm_data[arg_in_fun.conn_fd].name, name, 20);
-    printf("===========comm_data[max - 1].name==============\n");
+   /* printf("===========comm_data[max - 1].name==============\n");
     for (int i = 0; i < max; i++)
     {
         printf("i:%d name:%s socket%d \n", i, comm_data[i].name, comm_data[i].socket);
     }
 
     printf("=============================================\n");
-
-    printf("listen client connect  \n");
+*/
+    printf("listen client connect %s \n",name);
     return FUNC_OK;
 }
-
+//显示绑定套接字
+void display_comm()
+{
+    for(int i = 0;i<max;i++)
+    {
+        printf("name :%s socket%d \n",comm_data[i].name,comm_data[i].socket);
+    }
+}
 //线程退出
 t_s32int socket_exit(void *arg, t_s32int *i)
 {
@@ -526,8 +533,10 @@ t_s32int socket_exit(void *arg, t_s32int *i)
     printf("=============================================\n");
 
   */
+    display_comm();
     return FUNC_OK;
 }
+
 
 //信号捕获函数 发信息给所有监听客户端
 void signal_handle(int sig)
@@ -588,9 +597,7 @@ void *thread_fun_rest(void *arg)
     fun_arg arg_in_fun = *(fun_arg *)arg;
     int flag =0;
     printf("new thread:%lld,socket:%d,user connect\n", (long long)pthread_self, arg_in_fun.conn_fd);
-    //if_listen_socket(arg, &i);
-
-    //send_mes_by_thread("cc", "send message\n");
+  
     while (1)
     {
         t_s8int rst[20], cus[20];
@@ -599,11 +606,16 @@ void *thread_fun_rest(void *arg)
         read(arg_in_fun.conn_fd, &i, 4);
 
         if (i == 100)
-        {   flag =i;
-            if_listen_socket(arg, NULL);
+        {
+            if( if_listen_socket(arg, NULL)!=FUNC_OK)
+
+            {
+                INFO_MSG("socket bind to name error\n ");
+                return NULL;
+            }
         }
-        printf("get  new flag:%d connfd:%d \n", i, arg_in_fun.conn_fd);
-        send_mes_by_thread("cc","hello");
+        printf("new loop start:%d \n",flag++);
+        //send_mes_by_thread("cc","new message to op\n");
         switch (i)
         {
         case 41:
